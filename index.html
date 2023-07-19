@@ -16,7 +16,7 @@
             color: #ffffff;
             font-family: Arial, sans-serif;
             text-align: center;
-						font-size: 2em;
+			font-size: 2em;
         }
         
         h1 {
@@ -195,13 +195,7 @@
 		}
 		
 		function getRandomColor() {
-			var randomIndex;
-			do {
-				randomIndex = Math.floor(Math.random() * colors.length);
-			} while (colors[randomIndex] == currentColor);
-			
-			currentColor = colors[randomIndex];
-			
+			var randomIndex = Math.floor(Math.random() * colors.length);
 			return colors[randomIndex];
 		}
 		
@@ -214,15 +208,22 @@
 			interval = setInterval(function() {
 				counterValue -= transitionDurationInSeconds.value;
 				if (counterValue >= 0) {
-					var currentColor = document.body.style.backgroundColor;
-					var randomColor = getRandomColor(currentColor);
-					document.body.style.backgroundColor = randomColor;
+					changeColor();
 				} else {
 					clearInterval(interval);
 					counterContainer.style.display = "none";
 					location.reload();
 				}
 			}, transitionDurationInSeconds.value * 1000);
+		}
+
+		function changeColor() {
+			document.body.style.backgroundColor = "black";
+
+			setTimeout(function() {
+				var randomColor = getRandomColor();
+				document.body.style.backgroundColor = randomColor;
+			}, 100);
 		}
 		
 		function changeColorByCount(changeCount) {
@@ -235,9 +236,7 @@
 			interval = setInterval(function() {
 				counterValue--;
 				if (counterValue >= 0) {
-					var currentColor = document.body.style.backgroundColor;
-					var randomColor = getRandomColor(currentColor);
-					document.body.style.backgroundColor = randomColor;
+					changeColor();
 					counter.textContent = counterValue;
 				} else {
 					clearInterval(interval);
