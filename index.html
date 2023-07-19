@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ColorTime</title>
+    <style>
+		@media (max-width: 767px) {
+			body {
+				font-size: 10em;
+			}
+		}
+
+		@media (min-width: 768px) {
+			body {
+				font-size: 2em;
+			}
+		}
+
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 8%;
+        }
+        
+        h1 {
+            margin-bottom: 1%;
+        }
+        
+        label {
+            display: inline-block;
+            margin-right: 1%;
+        }
+        
+        input[type="checkbox"] {
+            vertical-align: middle;
+        }
+        
+        select {
+            width: 15%;
+            height: 30px;
+            font-size: 0.5em;
+        }
+        
+        input[type="number"] {
+            width: 5%;
+            height: 30px;
+            font-size: 0.6em;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="homepage">
+	    <h1>ColorTime</h1>
+	    
+	    <div>
+			<label for="colorBlue">Bleu</label>
+			<input type="checkbox" id="colorBlue" value="#0000ff" checked>
+	    </div>
+	    
+	    <div>
+			<label for="colorRed">Rouge</label>
+			<input type="checkbox" id="colorRed" value="#ff0000" checked>
+	    </div>
+	    
+	    <div>
+			<label for="colorWhite">Blanc</label>
+			<input type="checkbox" id="colorWhite" value="#ffffff" checked>
+	    </div>
+	    
+	    <div>
+			<label for="colorYellow">Jaune</label>
+			<input type="checkbox" id="colorYellow" value="#ffff00" checked>
+	    </div>
+	    
+	    <div>
+			<label for="colorGreen">Vert</label>
+			<input type="checkbox" id="colorGreen" value="#00ff00" checked>
+	    </div>
+	    
+	    <br>
+	    
+	    <div>
+			<label for="DurationInSeconds">Durée de transition :</label>
+			<input type="number" id="transitionDurationInSeconds" min="0" step="0.1" value="1.2"> secondes
+	    </div>
+	    
+	    <br>
+	    
+	    <div>
+			<label for="changeType">Choix d'exercice :</label>
+			<select id="changeType">
+				<option value="time">Durée totale</option>
+				<option value="count">Nombre de changements</option>
+			</select>
+	    </div>
+	    
+	    <div id="timeContainer">
+			<label for="totalDuration">Durée totale (en secondes) :</label>
+			<input type="number" id="totalDuration" min="0" step="1" value="30">
+	    </div>
+	    
+	    <div id="countContainer" style="display: none;">
+			<label for="changeCount">Nombre de changements :</label>
+			<input type="number" id="changeCount" min="1" step="1" value="5">
+	    </div>
+	    
+	    <br>
+	    
+	    <button onclick="startColorChange()">Valider</button>
+	    
+	    <div id="counterContainer" style="display: none;">
+			<div id="counterMessage"></div>
+			<div id="counter"></div>
+	    </div>
+	</div>
+
+	<div id="countdown" style="display: none;">
+		<div id="countdownDiv" class="countdown">Départ dans <span id="countdownTimer">3</span>...</div>
+	</div>
+	    
+	<script>
+		var colors = [];
+		var interval;
+		var currentColor;
+		var changeType = document.getElementById("changeType");
+		var timeContainer = document.getElementById("timeContainer");
+		var countContainer = document.getElementById("countContainer");
+		var counterContainer = document.getElementById("counterContainer");
+		var counterMessage = document.getElementById("counterMessage");
+		var counter = document.getElementById("counter");
+		
+		changeType.addEventListener("change", function() {
+			if (changeType.value === "time") {
+				timeContainer.style.display = "block";
+				countContainer.style.display = "none";
+			} else if (changeType.value === "count") {
+				timeContainer.style.display = "none";
+				countContainer.style.display = "block";
+			}
+		});
+		
+		function startColorChange() {
+			document.getElementById('homepage').style.display = 'none';
+
+			startAndDisplayCountdown();
+			setTimeout(startDisplayingColor, 3 * 1000);
+		}
+
+		function startDisplayingColor() {
+			var colorBlue = document.getElementById("colorBlue");
+			var colorRed = document.getElementById("colorRed");
+			var colorWhite = document.getElementById("colorWhite");
+			var colorYellow = document.getElementById("colorYellow");
+			var colorGreen = document.getElementById("colorGreen");
+			
+			var transitionDuration = parseFloat(document.getElementById("transitionDurationInSeconds").value) * 1000; // Convert to milliseconds
+			
+			if (colorBlue.checked) {
+				colors.push(colorBlue.value);
+			}
+			if (colorRed.checked) {
+				colors.push(colorRed.value);
+			}
+			if (colorWhite.checked) {
+				colors.push(colorWhite.value);
+			}
+			if (colorYellow.checked) {
+				colors.push(colorYellow.value);
+			}
+			if (colorGreen.checked) {
+				colors.push(colorGreen.value);
+			}
+			
+			var changeTypeValue = changeType.value;
+			
+			if (changeTypeValue === "time") {
+				var totalDuration = parseFloat(document.getElementById("totalDuration").value) * 1000; // Convert to milliseconds
+				var changeCount = Math.floor(totalDuration / transitionDuration);
+				changeColorByTime(changeCount);
+			} else if (changeTypeValue === "count") {
+				var changeCount = parseInt(document.getElementById("changeCount").value);
+				changeColorByCount(changeCount);
+			}
+		}
+		
+		function getRandomColor() {
+			var randomIndex;
+			do {
+				randomIndex = Math.floor(Math.random() * colors.length);
+			} while (colors[randomIndex] == currentColor);
+			
+			currentColor = colors[randomIndex];
+			
+			return colors[randomIndex];
+		}
+		
+		function changeColorByTime(changeCount) {
+			var counterValue = changeCount;
+			document.body.style.backgroundColor = getRandomColor("");
+			
+			counterContainer.style.display = "block";
+			
+			interval = setInterval(function() {
+				counterValue -= transitionDurationInSeconds.value;
+				if (counterValue >= 0) {
+					var currentColor = document.body.style.backgroundColor;
+					var randomColor = getRandomColor(currentColor);
+					document.body.style.backgroundColor = randomColor;
+				} else {
+					clearInterval(interval);
+					counterContainer.style.display = "none";
+					location.reload();
+				}
+			}, transitionDurationInSeconds.value * 1000);
+		}
+		
+		function changeColorByCount(changeCount) {
+			var counterValue = changeCount;
+			document.body.style.backgroundColor = getRandomColor("");
+			
+			counterContainer.style.display = "block";
+			counterMessage.textContent = "Nombre de changements restants :";
+			
+			interval = setInterval(function() {
+				counterValue--;
+				if (counterValue >= 0) {
+					var currentColor = document.body.style.backgroundColor;
+					var randomColor = getRandomColor(currentColor);
+					document.body.style.backgroundColor = randomColor;
+					counter.textContent = counterValue;
+				} else {
+					clearInterval(interval);
+					counterContainer.style.display = "none";
+					location.reload();
+				}
+			}, transitionDurationInSeconds.value * 1000);
+		}
+
+		function startAndDisplayCountdown() {
+				var countdownElement = document.getElementById('countdownTimer');
+				var countdown = 3;
+
+				countdownElement.textContent = countdown;
+
+				var countdownElement = document.getElementById('countdown').style.display = '';
+
+				countdown--;
+	
+				var countdownInterval = setInterval(function() {
+					var countdownElement = document.getElementById('countdownTimer');
+					if (countdown >= 1) {
+						countdownElement.textContent = countdown;
+						countdown--;
+					} else {
+						countdownElement.textContent = 'Partez !';
+						clearInterval(countdownInterval);
+						document.getElementById('countdown').style.display = 'none';
+					}
+				}, 1000);
+			}
+	</script>
+</body>
+</html>
