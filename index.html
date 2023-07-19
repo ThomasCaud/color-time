@@ -5,12 +5,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
-				@media (max-width: 767px) {
-				}
-
-				@media (min-width: 768px) {
-				}
-
         body {
             background-color: #000000;
             color: #ffffff;
@@ -65,27 +59,27 @@
 	    
 	    <div>
 			<label for="colorBlue">Bleu</label>
-			<input type="checkbox" id="colorBlue" value="#0000ff" checked>
+			<input type="checkbox" id="colorBlue" value="blue" checked>
 	    </div>
 	    
 	    <div>
 			<label for="colorRed">Rouge</label>
-			<input type="checkbox" id="colorRed" value="#ff0000" checked>
+			<input type="checkbox" id="colorRed" value="red" checked>
 	    </div>
 	    
 	    <div>
 			<label for="colorWhite">Blanc</label>
-			<input type="checkbox" id="colorWhite" value="#ffffff" checked>
+			<input type="checkbox" id="colorWhite" value="white" checked>
 	    </div>
 	    
 	    <div>
 			<label for="colorYellow">Jaune</label>
-			<input type="checkbox" id="colorYellow" value="#ffff00" checked>
+			<input type="checkbox" id="colorYellow" value="yellow" checked>
 	    </div>
 	    
 	    <div>
 			<label for="colorGreen">Vert</label>
-			<input type="checkbox" id="colorGreen" value="#00ff00" checked>
+			<input type="checkbox" id="colorGreen" value="green" checked>
 	    </div>
 	    
 	    <br>
@@ -93,6 +87,15 @@
 	    <div>
 			<label for="DurationInSeconds">Durée de transition :</label>
 			<input type="number" id="transitionDurationInSeconds" min="0" step="0.1" value="1.2"> secondes
+	    </div>
+
+		<div>
+			<label for="changeMode">Mode :</label>
+			<select id="changeMode">
+				<option value="visual">Visuel</option>
+				<option value="sound">Auditif</option>
+				<option value="mixte">Mixte</option>
+			</select>
 	    </div>
 	    
 	    <br>
@@ -126,9 +129,32 @@
 	    
 	<script>
 		var colors = [];
+		var colorsData = {
+			blue: {
+				color: '#0000ff',
+				sound: 'sounds/blue.mp3'
+			},
+			red: {
+				color: '#ff0000',
+				sound: 'sounds/red.mp3'
+			},
+			white: {
+				color: '#ffffff',
+				sound: 'sounds/white.mp3'
+			},
+			yellow: {
+				color: '#ffff00',
+				sound: 'sounds/yellow.mp3'
+			},
+			green: {
+				color: '#00ff00',
+				sound: 'sounds/green.mp3'
+			},
+		};
 		var interval;
 		var currentColor;
 		var changeType = document.getElementById("changeType");
+		var changeMode = document.getElementById("changeMode");
 		var timeContainer = document.getElementById("timeContainer");
 		var countContainer = document.getElementById("countContainer");
 		var counterContainer = document.getElementById("counterContainer");
@@ -187,43 +213,62 @@
 			}
 		}
 		
-		function getRandomColor() {
-			var randomIndex = Math.floor(Math.random() * colors.length);
-			return colors[randomIndex];
-		}
-		
 		function changeColorByTime(changeCount) {
 			var counterValue = changeCount;
-			document.body.style.backgroundColor = getRandomColor("");
 			
 			interval = setInterval(function() {
 				counterValue -= transitionDurationInSeconds.value;
 				if (counterValue >= 0) {
-					changeColor();
+					changeDependingOnMode();
 				} else {
 					clearInterval(interval);
 					location.reload();
 				}
 			}, transitionDurationInSeconds.value * 1000);
 		}
-
-		function changeColor() {
+		
+		function changeDependingOnMode() {
 			document.body.style.backgroundColor = "black";
 
 			setTimeout(function() {
-				var randomColor = getRandomColor();
-				document.body.style.backgroundColor = randomColor;
+				var randomColorName = getRandomColorName();
+
+				if (changeMode.value === "visual") {
+					manageNewVisualColor(randomColorName);
+				} else if (changeMode.value === "sound") {
+					manageNewSoundColor(randomColorName);
+				} else if (changeMode.value === "mixte") {
+					var randomMode = Math.floor(Math.random() * 2);
+					if (randomMode === 0) {
+						manageNewVisualColor(randomColorName);
+					} else {
+						manageNewSoundColor(randomColorName);
+					}
+				}
 			}, 100);
 		}
-		
+
+		function manageNewVisualColor(colorName) {
+			document.body.style.backgroundColor = colorsData[colorName]['color'];
+		}
+
+		function manageNewSoundColor(colorName) {
+			var audio = new Audio(colorsData[colorName]['sound']);
+			audio.play();
+		}
+
+		function getRandomColorName() {
+			var randomIndex = Math.floor(Math.random() * colors.length);
+			return colors[randomIndex];
+		}
+
 		function changeColorByCount(changeCount) {
 			var counterValue = changeCount;
-			document.body.style.backgroundColor = getRandomColor("");
 			
 			interval = setInterval(function() {
 				counterValue--;
 				if (counterValue >= 0) {
-					changeColor();
+					changeDependingOnMode();
 				} else {
 					clearInterval(interval);
 					location.reload();
