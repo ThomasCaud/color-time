@@ -118,11 +118,6 @@
 	    <br>
 	    
 	    <button onclick="startColorChange()">Valider</button>
-	    
-	    <div id="counterContainer" style="display: none;">
-			<div id="counterMessage"></div>
-			<div id="counter"></div>
-	    </div>
 	</div>
 
 	<div id="countdown" style="display: none;">
@@ -137,8 +132,6 @@
 		var timeContainer = document.getElementById("timeContainer");
 		var countContainer = document.getElementById("countContainer");
 		var counterContainer = document.getElementById("counterContainer");
-		var counterMessage = document.getElementById("counterMessage");
-		var counter = document.getElementById("counter");
 		
 		changeType.addEventListener("change", function() {
 			if (changeType.value === "time") {
@@ -203,15 +196,12 @@
 			var counterValue = changeCount;
 			document.body.style.backgroundColor = getRandomColor("");
 			
-			counterContainer.style.display = "block";
-			
 			interval = setInterval(function() {
 				counterValue -= transitionDurationInSeconds.value;
 				if (counterValue >= 0) {
 					changeColor();
 				} else {
 					clearInterval(interval);
-					counterContainer.style.display = "none";
 					location.reload();
 				}
 			}, transitionDurationInSeconds.value * 1000);
@@ -230,17 +220,12 @@
 			var counterValue = changeCount;
 			document.body.style.backgroundColor = getRandomColor("");
 			
-			counterContainer.style.display = "block";
-			counterMessage.textContent = "Nombre de changements restants :";
-			
 			interval = setInterval(function() {
 				counterValue--;
 				if (counterValue >= 0) {
 					changeColor();
-					counter.textContent = counterValue;
 				} else {
 					clearInterval(interval);
-					counterContainer.style.display = "none";
 					location.reload();
 				}
 			}, transitionDurationInSeconds.value * 1000);
