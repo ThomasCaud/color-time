@@ -171,12 +171,12 @@
 		function startColorChange() {
 			document.getElementById('homepage').style.display = 'none';
 
-			startAndDisplayCountdown();
-			setTimeout(startDisplayingColor, 3 * 1000);
+			const secondsBeforeStart = 5;
+			startAndDisplayCountdown(secondsBeforeStart);
+			setTimeout(startDisplayingColor, secondsBeforeStart * 1000);
 		}
 
 		function startDisplayingColor() {
-			console.log("startDisplayingColor");
 			var colorBlue = document.getElementById("colorBlue");
 			var colorRed = document.getElementById("colorRed");
 			var colorWhite = document.getElementById("colorWhite");
@@ -292,9 +292,9 @@
 			}, transitionDurationInSeconds.value * 1000);
 		}
 
-		function startAndDisplayCountdown() {
+		function startAndDisplayCountdown(secondsBeforeStart) {
 				var countdownElement = document.getElementById('countdownTimer');
-				var countdown = 3;
+				var countdown = secondsBeforeStart;
 
 				countdownElement.textContent = countdown;
 
