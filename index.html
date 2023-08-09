@@ -204,20 +204,21 @@
 			var changeTypeValue = changeType.value;
 			
 			if (changeTypeValue === "time") {
-				var totalDuration = parseFloat(document.getElementById("totalDuration").value) * 1000; // Convert to milliseconds
-				console.log("durée de l'exercice:", totalDuration);
+				const totalDurationInSeconds = parseFloat(document.getElementById("totalDuration").value);
+				const totalDurationInMs = totalDurationInSeconds * 1000;
+				console.log("durée de l'exercice:", totalDurationInMs);
 				console.log("transitionDuration", transitionDuration);
-				var changeCount = Math.floor(totalDuration / transitionDuration);
+				var changeCount = Math.floor(totalDurationInMs / transitionDuration);
 				console.log(changeCount);
-				changeColorByTime(changeCount);
+				changeColorByTime(totalDurationInSeconds);
 			} else if (changeTypeValue === "count") {
 				var changeCount = parseInt(document.getElementById("changeCount").value);
 				changeColorByCount(changeCount);
 			}
 		}
 		
-		function changeColorByTime(changeCount) {
-			var counterValue = changeCount;
+		function changeColorByTime(totalDurationInSeconds) {
+			var counterValue = totalDurationInSeconds;
 			counterValue -= transitionDurationInSeconds.value;
 			if (counterValue >= 0) {
 				changeDependingOnMode();
